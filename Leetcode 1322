@@ -1,0 +1,13 @@
+This includes three columns: ad_id, user_id, action.
+(ad_id, user_id) is the primary key for this table.
+Each row contains a ad id, an id of user, and a action taken by this user regarding this ad.
+The action column is a ENUM type of ('clicked', 'reviewed', 'ignore').
+Performance of each ad is measured using clicked_through_rate (ctr), where ctr = total clicked numbers / (total clicked numbers + total reviewed numbers).
+Write a query to find the ctr of each ad.
+
+select ad_id, ifnull(round(avg(case when action = 'clicked' then 1 
+                               when action = 'viewed' then 0 
+                               else null end)*100,2),0) as ctr
+from ads
+group by ad_id
+order by ctr desc,ad_id;
