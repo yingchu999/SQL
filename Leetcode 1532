@@ -1,0 +1,11 @@
+select c.name as customer_name, b.customer_id, b.order_id, b.order_date
+from customers c
+join
+(select customer_id, order_id,order_date
+from 
+(select customer_id, order_id,order_date,
+row_number() over (partition by customer_id order by order_date desc) as r
+from orders) a
+where a.r <= 3) b
+on c.customer_id = b.customer_id
+order by c.name,b.customer_id,b.order_date desc;
