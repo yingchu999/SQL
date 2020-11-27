@@ -1,0 +1,11 @@
+select a.company_id, a.employee_id, a.employee_name,
+round((case 
+when b.m < 1000 then a.salary
+when 1000<=b.m and b.m<=10000 then a.salary*(1-0.24)
+when b.m > 10000 then a.salary*(1-0.49)
+end)) as salary
+from salaries a
+join (select company_id, max(salary) as m
+from salaries
+group by company_id) b
+on a.company_id = b.company_id
