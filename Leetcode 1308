@@ -1,0 +1,11 @@
+Solution1:
+select s1.gender, s1.day, sum(s2.score_points) as total
+from scores s1, scores s2
+where s1.gender = s2.gender and s1.day >= s2.day
+group by s1.player_name, s1.day
+order by s1.gender, s1.day;
+
+Solution2:
+SELECT gender, day, 
+       SUM(score_points) OVER(PARTITION BY gender ORDER BY day) AS total
+FROM Scores;
