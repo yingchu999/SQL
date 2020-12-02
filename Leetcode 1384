@@ -1,0 +1,23 @@
+select a.product_id, p.product_name,a.Y as report_year,
+(case 
+when year(a.period_start) = Y and year(a.period_end) = Y then (dayofyear(a.period_end)-dayofyear(a.period_start)+1)*average_daily_sales
+when year(period_start) = Y and year(period_end) > Y then
+(365-dayofyear(period_start)+1)*average_daily_sales
+when year(period_start) < Y and year(period_end) = Y then
+(dayofyear(period_end))*average_daily_sales
+when year(period_start) < Y and year(period_end) > Y then
+(365)*average_daily_sales end
+) as total_amount
+from
+(select *, '2018' as Y
+from sales
+union 
+select *, '2019' as Y
+from sales
+union
+select *, '2020' as Y
+from sales) a
+join product p
+on a.product_id = p.product_id
+where Y >= year(period_start) and Y <= year(period_end)
+order by a.product_id,a.Y;
