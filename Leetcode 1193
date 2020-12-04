@@ -1,0 +1,11 @@
+select a.month, a.country, a.trans_count, ifnull(b.approved_count,0) as approved_count, a.trans_total_amount, ifnull(b.approved_total_amount,0) as approved_total_amount
+from
+(select left(trans_date, 7) as month, country, count(state) as trans_count, sum(amount) as trans_total_amount
+from transactions
+group by left(trans_date,7),country) a
+left join
+(select left(trans_date,7) as month, country,count(state) as approved_count, sum(amount) as approved_total_amount
+from transactions
+where state = 'approved'
+group by left(trans_date,7),country) b
+on a.month = b.month and a.country = b.country;
