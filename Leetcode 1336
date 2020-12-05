@@ -1,0 +1,37 @@
+with row_nums AS (SELECT ROW_NUMBER() OVER () as rn 
+                 FROM Transactions 
+                 UNION 
+                 SELECT 0) 
+                 
+select r.rn as transactions_count, ifnull(d.visits_count,0) as visits_count
+from
+row_nums r
+left join
+(
+select b.c as transactions_count, count(user_id) as visits_count
+from 
+(select v.user_id, ifnull(a.c,0) as c
+from visits v 
+left join
+(select user_id, transaction_date, count(user_id) as c
+from transactions
+group by user_id, transaction_date) a
+on v.user_id = a.user_id and v.visit_date = a.transaction_date) b
+group by b.c
+order by b.c
+) d
+on r.rn = d.transactions_count
+where r.rn <=(select max(transactions_count) from (
+select b.c as transactions_count, count(user_id) as visits_count
+from 
+(select v.user_id, ifnull(a.c,0) as c
+from visits v 
+left join
+(select user_id, transaction_date, count(user_id) as c
+from transactions
+group by user_id, transaction_date) a
+on v.user_id = a.user_id and v.visit_date = a.transaction_date) b
+group by b.c
+order by b.c
+) d)
+order by r.rn
