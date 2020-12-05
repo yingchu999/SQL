@@ -1,0 +1,9 @@
+select b.username, b.activity, b.startdate, b.enddate from 
+(select *,rank() over (partition by username order by startdate desc) as r
+from useractivity) b
+where b.r = 2
+union all
+select * 
+from useractivity
+group by username
+having count(*) = 1
