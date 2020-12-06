@@ -1,0 +1,33 @@
+with a as (
+select player_id, event_date, rank() over(partition by player_id order by event_date) as r
+    from activity
+),
+
+b as (
+select player_id, event_date
+    from a 
+    where r = 1
+),
+
+c as (
+select event_date as install_dt, count(player_id) as installs
+from b
+group by event_date
+),
+
+d as (
+select player_id, date_add(event_date, interval -1 day) as event_day
+    from activity
+),
+
+e as (
+    select event_day, count(event_day) as day
+from d
+where (player_id, event_day) in (select * from b)
+group by event_day
+    )
+    
+select c.install_dt, c.installs, ifnull(round(e.day/c.installs,2),0) as Day1_retention
+from c
+left join e
+on c.install_dt = e.event_day;
