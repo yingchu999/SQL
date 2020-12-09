@@ -1,0 +1,19 @@
+with a as
+(select t.client_id, t.driver_id, t.status, t.request_at
+from trips t
+join users u1
+join users u2
+on t.client_id = u1.users_id and t.driver_id = u2.users_id
+where u1.banned = 'No' and u2.banned = 'No' and (t.request_at between'2013-10-01' and '2013-10-03'))
+
+select b.request_at as day, ifnull(round(c.cnt/b.cnt,2),0) as 'cancellation rate'
+from
+(select request_at, count(*) as cnt
+from a 
+group by request_at) b
+left join
+(select request_at, count(*) as cnt
+from a 
+where status <> 'completed'
+group by request_at) c
+on b.request_at = c.request_at;
