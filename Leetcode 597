@@ -1,0 +1,4 @@
+select round(ifnull(a.accept/b.total,0),2) as accept_rate
+from
+(select count(distinct requester_id, accepter_id) as accept from requestaccepted) a,
+(select count(distinct sender_id, send_to_id) as total from friendrequest) b
