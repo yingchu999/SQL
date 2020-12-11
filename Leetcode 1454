@@ -1,0 +1,27 @@
+/*select b.id, a.name
+from
+(select distinct l1.id
+from logins l1,
+logins l2,
+logins l3,
+logins l4,
+logins l5
+where datediff(l2.login_date,l1.login_date) = 1
+and datediff(l3.login_date,l1.login_date) = 2
+and datediff(l4.login_date,l1.login_date) = 3
+and datediff(l5.login_date,l1.login_date) = 4
+and l1.id = l2.id 
+and l1.id = l3.id 
+and l1.id = l4.id 
+and l1.id = l5.id) b
+join accounts a
+on b.id = a.id
+order by b.id;*/
+
+SELECT DISTINCT a.id, (SELECT name FROM Accounts WHERE id=a.id) name
+FROM Logins a, Logins b
+WHERE a.id=b.id AND
+DATEDIFF(a.login_date,b.login_date) BETWEEN 1 AND 4
+GROUP BY a.id, a.login_date
+HAVING COUNT(DISTINCT b.login_date)=4
+;
