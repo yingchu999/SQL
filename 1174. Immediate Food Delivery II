@@ -1,0 +1,17 @@
+with a as(
+    select * from
+    (select 
+        customer_id,
+        order_date,
+        customer_pref_delivery_date,
+        rank() over(partition by customer_id order by order_date) as r
+    from delivery) b
+    where r = 1)
+    
+select
+round(
+(select count(*)
+from a 
+where a.order_date = a.customer_pref_delivery_date)/
+(select count(*)
+from a)*100, 2) as immediate_percentage;
