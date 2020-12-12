@@ -1,0 +1,11 @@
+select '[0-5>' as bin, sum(duration/60<5) as total
+from sessions
+union
+select '[5-10>' as bin, sum(5<=duration/60 and duration/60<10) as total
+from sessions
+union
+select '[10-15>' as bin, sum(10<=duration/60 and duration/60<15) as total
+from sessions
+union
+select '15 or more' as bin, sum(15<=duration/60) as total
+from sessions
