@@ -1,0 +1,14 @@
+with a as 
+(select 
+        customer_id,
+        product_id,
+        count(product_id) as cnt,
+        rank() over(partition by customer_id order by count(product_id) desc) as r
+from orders
+group by customer_id, product_id)
+
+select a.customer_id, a.product_id, p.product_name
+from a 
+join products p
+on a.product_id = p.product_id
+where r = 1;
