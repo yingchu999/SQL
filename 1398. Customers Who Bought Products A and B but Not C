@@ -1,0 +1,23 @@
+with a as
+(select distinct customer_id
+from orders 
+where product_name = 'A'),
+
+b as
+(select distinct customer_id
+from orders 
+where product_name = 'B'),
+
+c as 
+(select distinct customer_id
+from orders 
+where product_name = 'C')
+
+select distinct o.customer_id, c.customer_name
+from orders o
+join customers c
+on o.customer_id = c.customer_id
+where o.customer_id in (select * from a)
+and o.customer_id in (select * from b)
+and o.customer_id not in (select* from c)
+order by o.customer_id;
