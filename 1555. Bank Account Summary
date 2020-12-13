@@ -1,0 +1,17 @@
+select  u.user_id, 
+        u.user_name, 
+        (u.credit+ifnull(B.amount,0)) as credit, 
+        (case when (u.credit+ifnull(B.amount,0))<0 then 'Yes' else 'No' end) as credit_limit_breached
+from users u
+left join
+(
+    select  user_id, 
+            sum(amount) as amount
+    from
+        (select paid_by as user_id, -amount as amount
+        from transactions
+        union all
+        select paid_to as user_id, amount as amount
+        from transactions) a
+    group by user_id) b 
+on u.user_id = B.user_id;
