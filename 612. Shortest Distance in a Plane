@@ -1,0 +1,9 @@
+select round(sqrt(power((a.x-b.x),2)+power((a.y-b.y),2)),2) as shortest
+from
+(select *, row_number() over() as r
+from point_2d) a,
+(select *, row_number() over() as r
+from point_2d) b
+where a.r < b.r
+order by shortest 
+limit 1;
