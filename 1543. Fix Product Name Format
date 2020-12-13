@@ -1,0 +1,8 @@
+select product_name, sale_date, count(product_name) as total
+from
+(select  
+        lower(rtrim(ltrim(product_name))) as product_name, 
+        left(sale_date,7) as sale_date
+from sales) a
+group by sale_date, product_name
+order by product_name, sale_date;
