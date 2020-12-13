@@ -1,0 +1,5 @@
+select name 
+from
+(select name,ifnull(referee_id,0) as referee_id
+from customer) a
+where referee_id != 2;
