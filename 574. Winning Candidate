@@ -1,0 +1,6 @@
+select name
+from vote v
+join candidate c
+on v.candidateid = c.id
+group by candidateid
+order by c;
