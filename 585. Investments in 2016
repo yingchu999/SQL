@@ -1,0 +1,15 @@
+select sum(tiv_2016) as tiv_2016
+from insurance 
+where pid in 
+(select distinct i1.pid
+from insurance i1,
+insurance i2
+where i1.tiv_2015 = i2.tiv_2015
+and i1.pid != i2.pid)
+and pid not in 
+(select distinct i1.pid
+from insurance i1,
+insurance i2
+where i1.lat = i2.lat 
+and i1.lon = i2.lon
+and i1.pid != i2.pid);
