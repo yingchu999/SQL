@@ -1,0 +1,6 @@
+select p.name, sum(rest) as rest, sum(paid) as paid, sum(canceled) as canceled, sum(refunded) as refunded
+from product p
+join invoice i
+on p.product_id = i.product_id
+group by p.name
+order by p.name;
