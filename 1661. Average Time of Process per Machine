@@ -1,0 +1,6 @@
+select machine_id, round(sum(dur)/count(dur),3) as processing_time
+from
+(select machine_id, max(timestamp)-min(timestamp) as dur
+from activity
+group by machine_id, process_id) a
+group by machine_id;
