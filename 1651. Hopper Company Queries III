@@ -1,0 +1,29 @@
+with recursive month as (
+    select 1 as month
+    union
+    select month + 1 as month 
+	from month where month < 12
+),
+
+a as
+(select month(r.requested_at) as month, sum(a.ride_distance) as ride_distance, sum(a.ride_duration) as ride_duration
+from acceptedrides a
+join 
+rides r
+on a.ride_id = r.ride_id where year(r.requested_at) = '2020'
+group by month
+order by month),
+
+b as
+(select m.month, a.ride_distance, a.ride_duration 
+from month m
+left join 
+a 
+on m.month = a.month)
+
+select b1.month, round(ifnull(sum(b2.ride_distance)/3,0),2) as average_ride_distance, round(ifnull(sum(b2.ride_duration)/3,0),2) as average_ride_duration 
+from b b1,
+b b2
+where b2.month - b1.month between 0 and 2
+group by b1.month
+limit 10;
