@@ -1,0 +1,12 @@
+with recursive id as (
+    select 1 as id
+    union
+    select id + 1 as id 
+	from id where id < (select max(customer_id) from customers)
+)
+
+select i.id as ids
+from id i
+left join customers c
+on i.id = c.customer_id
+where ifnull(c.customer_id,0) = 0;
