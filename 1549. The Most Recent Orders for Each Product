@@ -1,0 +1,6 @@
+select p.product_name, o.product_id, o.order_id, o.order_date
+from products p
+join orders o
+on p.product_id = o.product_id
+where o.order_date = (select max(order_date) from orders where product_id = p.product_id group by product_id)
+order by product_name, product_id, order_id;
