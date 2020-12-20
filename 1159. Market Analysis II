@@ -1,0 +1,30 @@
+with a as (
+select 
+    order_date, 
+    row_number() over (partition by seller_id order by order_date) as r, 
+    item_id, 
+    seller_id
+from orders
+order by seller_id
+),
+b as
+(select 
+    a.seller_id, 
+    (case when i.item_brand=u.favorite_brand then 'yes' 
+     else 'no' end) as temp
+from 
+    a
+        join 
+    users u on a.seller_id = u.user_id
+        join 
+    items i on a.item_id = i.item_id
+where a.r = 2
+order by a.seller_id)
+
+select 
+    u.user_id as seller_id, 
+    ifnull(b.temp,'no') as 2nd_item_fav_brand
+from 
+    users u 
+        left join
+    b on u.user_id = b.seller_id;
