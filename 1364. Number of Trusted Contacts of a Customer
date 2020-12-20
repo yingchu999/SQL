@@ -1,0 +1,9 @@
+select i.invoice_id, cu.customer_name, i.price, count(co.contact_name) as contacts_cnt, count(case when co.contact_name in (select customer_name from customers) then co.contact_name else null end) as trusted_contacts_cnt
+from 
+    invoices i
+        join
+    customers cu on i.user_id = cu.customer_id
+        left join
+    contacts co on co.user_id = cu.customer_id
+group by i.invoice_id, cu.customer_name
+order by i.invoice_id;
