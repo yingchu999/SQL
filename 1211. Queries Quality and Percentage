@@ -1,0 +1,14 @@
+select 
+    q.query_name, 
+    round(sum(q.rating/q.position)/count(q.query_name),2) as quality, 
+    round(ifnull(a.poor/count(q.query_name),0)*100,2) as poor_query_percentage
+from 
+    queries q
+        left join
+    (select 
+        query_name, 
+        count(rating) as poor 
+     from queries 
+     where rating<3 
+     group by query_name) a on q.query_name = a.query_name
+group by query_name;
