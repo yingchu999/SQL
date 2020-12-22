@@ -1,0 +1,29 @@
+with a as
+(select 
+    e1.id, 
+    e1.month, 
+    e2.salary, 
+    dense_rank() over(partition by e1.id order by e1.month desc) as r
+from 
+    employee e1,
+    employee e2
+where 
+    e1.id = e2.id and 
+    (e1.month-e2.month) between 0 and 2
+order by 
+    e1.id, 
+    e1.month desc) 
+
+select 
+    id, 
+    month, 
+    sum(salary) as salary
+from 
+    a
+where 
+    r!=1
+group by 
+    id, month
+order by 
+    id, 
+    month desc;
