@@ -1,0 +1,21 @@
+# Approach 1:
+SELECT
+  Score,
+  (SELECT count(distinct Score) FROM Scores WHERE Score >= s.Score) Rank
+FROM Scores s
+ORDER BY Score desc
+
+# Approach 2:
+
+select score, dense_rank() over (order by score desc) as 'Rank'
+from scores;
+
+# Approach 3:
+
+SELECT
+  Score,
+  @rank := @rank + (@prev <> (@prev := Score)) Rank
+FROM
+  Scores,
+  (SELECT @rank := 0, @prev := -1) init
+ORDER BY Score desc
