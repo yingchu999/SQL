@@ -1,0 +1,38 @@
+with recursive a as
+(select 1 as month
+union 
+select month +1 as month
+from a
+where month < 12),
+
+b as (select a.month, c.cnt
+from 
+a
+left join
+(select month(join_date) as month, count(driver_id) as cnt
+from drivers
+where year(join_date) = '2020'
+group by month(join_date)) c
+on a.month = c.month),
+
+e as (select d.month, d.cnt+(select count(driver_id) from drivers where year(join_date)<'2020') as active_drivers
+from
+(select b1.month, sum(b2.cnt) as cnt
+from b b1,
+b b2
+where b1.month >= b2.month
+group by b1.month) d) 
+
+select e.month, round(ifnull(f.drivers/e.active_drivers,0)*100,2) as working_percentage
+from 
+e
+left join
+(select month(r.requested_at) as month, count(distinct a.driver_id) as drivers
+from rides r
+join 
+acceptedrides a
+on r.ride_id = a.ride_id
+where year(requested_at) = '2020'
+group by month) f
+on e.month = f.month
+order by month;
