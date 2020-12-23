@@ -1,0 +1,34 @@
+with a as (select user_id, spend_date
+from spending 
+where platform = 'mobile'),
+
+b as (
+select user_id, spend_date
+from spending 
+where platform = 'desktop'
+),
+
+c as (select a.user_id, a.spend_date
+from a join b
+on a.user_id = b.user_id and a.spend_date = b.spend_date),
+
+e as (select distinct spend_date, d.*
+from spending
+join
+(select 'desktop' as platform
+union
+select 'mobile' as platform
+union
+select 'both' as platform) d),
+
+f as (select spend_date, platform, sum(amount) as total_amount, count(distinct user_id) as total_users
+from
+(select user_id, spend_date, (case when (user_id,spend_date) in (select * from c) then 'both' else platform end) as platform, amount
+from spending) d
+group by spend_date, platform)
+
+select e.spend_date, e.platform, ifnull(f.total_amount,0) as total_amount, ifnull(f.total_users,0) as total_users
+from e
+left join
+f
+on e.spend_date = f.spend_date and e.platform = f.platform;
