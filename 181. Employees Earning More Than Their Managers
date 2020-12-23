@@ -1,0 +1,21 @@
+# Approach 1: Using join
+
+select 
+    e1.name as employee
+from 
+    employee e1
+        join 
+    employee e2
+on e1.managerid = e2.id
+where e1.salary > e2.salary;
+
+# Approach 2: Without join
+
+SELECT
+    a.Name AS 'Employee'
+FROM
+    Employee AS a,
+    Employee AS b
+WHERE
+    a.ManagerId = b.Id
+        AND a.Salary > b.Salary
