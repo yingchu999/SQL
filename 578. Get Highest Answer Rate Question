@@ -1,0 +1,14 @@
+select question_id as survey_log
+from
+(select a.question_id, ifnull(b.cnt,0)/a.c as radio
+from 
+(select question_id, count(question_id) as c from survey_log
+where action = 'show'
+group by question_id) a
+left join
+(select question_id, count(question_id) as cnt from survey_log
+where action = 'answer'
+group by question_id) b
+on a.question_id = b.question_id) c
+order by radio desc
+limit 1;
